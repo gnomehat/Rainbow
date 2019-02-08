@@ -3,6 +3,8 @@ import plotly
 from plotly.graph_objs import Scatter
 from plotly.graph_objs.scatter import Line
 import torch
+import imutil
+import time
 
 from env import Env
 
@@ -18,11 +20,16 @@ def test(args, T, dqn, val_mem, evaluate=False):
   env.eval()
   Ts.append(T)
   T_rewards, T_Qs = [], []
+  if args.render_video:
+    filename = 'evaluation_{}.mp4'.format(int(time.time()))
+    vid = imutil.Video(filename)
 
   # Test performance over several episodes
   done = True
   for _ in range(args.evaluation_episodes):
+    t = 0
     while True:
+      t += 1
       if done:
         state, reward_sum, done = env.reset(), 0, False
 
@@ -31,11 +38,16 @@ def test(args, T, dqn, val_mem, evaluate=False):
       reward_sum += reward
       if args.render:
         env.render()
+      if args.render_video:
+        caption = "t={} reward={} action={}".format(t, reward_sum, action)
+        vid.write_frame(state[-1], resize_to=(512,512), caption=caption)
 
       if done:
         T_rewards.append(reward_sum)
         break
   env.close()
+  if args.render_video:
+    vid.finish()
 
   # Test Q-values over validation memory
   for state in val_mem:  # Iterate over valid states

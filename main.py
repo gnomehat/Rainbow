@@ -37,9 +37,10 @@ parser.add_argument('--batch-size', type=int, default=32, metavar='SIZE', help='
 parser.add_argument('--learn-start', type=int, default=int(80e3), metavar='STEPS', help='Number of steps before starting training')
 parser.add_argument('--evaluate', action='store_true', help='Evaluate only')
 parser.add_argument('--evaluation-interval', type=int, default=100000, metavar='STEPS', help='Number of training steps between evaluations')
-parser.add_argument('--evaluation-episodes', type=int, default=10, metavar='N', help='Number of evaluation episodes to average over')
+parser.add_argument('--evaluation-episodes', type=int, default=1, metavar='N', help='Number of evaluation episodes to average over')
 parser.add_argument('--evaluation-size', type=int, default=500, metavar='N', help='Number of transitions to use for validating Q')
 parser.add_argument('--render', action='store_true', help='Display screen (testing only)')
+parser.add_argument('--render_video', action='store_true', help='Generate .mp4 video output (testing only)')
 parser.add_argument('--embrace-chaos', action='store_true', default=False, help='Improve performance with nondeterministic operations')
 
 
