@@ -16,6 +16,7 @@ Ts, rewards, Qs, best_avg_reward = [], [], [], -1e10
 # Test DQN
 def test(args, T, dqn, val_mem, evaluate=False):
   global Ts, rewards, Qs, best_avg_reward
+  print('starting test')
   env = Env(args)
   env.eval()
   Ts.append(T)
@@ -26,7 +27,8 @@ def test(args, T, dqn, val_mem, evaluate=False):
 
   # Test performance over several episodes
   done = True
-  for _ in range(args.evaluation_episodes):
+  for i in range(args.evaluation_episodes):
+    print('Running episode {}'.format(i))
     t = 0
     while True:
       t += 1

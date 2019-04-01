@@ -34,7 +34,7 @@ parser.add_argument('--reward-clip', type=int, default=1, metavar='VALUE', help=
 parser.add_argument('--lr', type=float, default=0.0000625, metavar='η', help='Learning rate')
 parser.add_argument('--adam-eps', type=float, default=1.5e-4, metavar='ε', help='Adam epsilon')
 parser.add_argument('--batch-size', type=int, default=32, metavar='SIZE', help='Batch size')
-parser.add_argument('--learn-start', type=int, default=int(80e3), metavar='STEPS', help='Number of steps before starting training')
+parser.add_argument('--learn-start', type=int, default=1000, metavar='STEPS', help='Number of steps before starting training')
 parser.add_argument('--evaluate', action='store_true', help='Evaluate only')
 parser.add_argument('--evaluation-interval', type=int, default=1000, metavar='STEPS', help='Number of training steps between evaluations')
 parser.add_argument('--evaluation-episodes', type=int, default=1, metavar='N', help='Number of evaluation episodes to average over')
@@ -91,7 +91,9 @@ while T < args.evaluation_size:
   T += 1
 
 if args.evaluate:
+  print('Setting DQN to evaluation')
   dqn.eval()  # Set DQN (online network) to evaluation mode
+  print('Running test()')
   avg_reward, avg_Q = test(args, 0, dqn, val_mem, evaluate=True)  # Test
   print('Avg. reward: ' + str(avg_reward) + ' | Avg. Q: ' + str(avg_Q))
 else:
@@ -130,5 +132,9 @@ else:
         dqn.update_target_net()
 
     state = next_state
+
+    if T % 10000 == 0:
+      print("Saving after {} iterations".format(T))
+      dqn.save('.')
 
 env.close()
