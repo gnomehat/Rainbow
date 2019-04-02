@@ -18,6 +18,7 @@ class Env():
 
     def reset(self):
         state = self.env.reset()
+        self.episode_length = 0
         if self.total_episodes > 10:
             self.env = ZoneIntrudersEnvironment()
             self.total_episodes = 0
@@ -36,4 +37,7 @@ class Env():
         pass
 
     def eval(self):
+        pass
+
+    def close(self):
         pass
