@@ -53,6 +53,7 @@ def test(args, T, dqn, val_mem, evaluate=False):
 
   # Test Q-values over validation memory
   for state in val_mem:  # Iterate over valid states
+    state = state.view(-1, state.shape[2], state.shape[3])
     T_Qs.append(dqn.evaluate_q(state))
 
   avg_reward, avg_Q = sum(T_rewards) / len(T_rewards), sum(T_Qs) / len(T_Qs)

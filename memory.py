@@ -4,7 +4,8 @@ import torch
 
 
 Transition = namedtuple('Transition', ('timestep', 'state', 'action', 'reward', 'nonterminal'))
-blank_trans = Transition(0, torch.zeros(64, 64, dtype=torch.uint8), None, 0, False)
+NUM_CHANNELS = 4
+blank_trans = Transition(0, torch.zeros(NUM_CHANNELS, 64, 64, dtype=torch.uint8), None, 0, False)
 
 
 # Segment tree data structure where parent node values are sum/max of children node values
@@ -75,7 +76,10 @@ class ReplayMemory():
 
   # Adds state and action at time t, reward and terminal at time t + 1
   def append(self, state, action, reward, terminal):
-    state = state[-1].mul(255).to(dtype=torch.uint8, device=torch.device('cpu'))  # Only store last frame and discretise to save memory
+
+    # PACKING
+    state = state[-NUM_CHANNELS:].mul(255).to(dtype=torch.uint8, device=torch.device('cpu'))  # Only store last frame and discretise to save memory
+
     self.transitions.append(Transition(self.t, state, action, reward, not terminal), self.transitions.max)  # Store new transition with maximum priority
     self.t = 0 if terminal else self.t + 1  # Start new episodes with t = 0
 
@@ -107,9 +111,12 @@ class ReplayMemory():
 
     # Retrieve all required transition data (from t - h to t + n)
     transition = self._get_transition(idx)
+
+    # UN-PACKING
     # Create un-discretised state and nth next state
-    state = torch.stack([trans.state for trans in transition[:self.history]]).to(dtype=torch.float32, device=self.device).div_(255)
-    next_state = torch.stack([trans.state for trans in transition[self.n:self.n + self.history]]).to(dtype=torch.float32, device=self.device).div_(255)
+    state = torch.cat([trans.state for trans in transition[:self.history]]).to(dtype=torch.float32, device=self.device).div_(255)
+    next_state = torch.cat([trans.state for trans in transition[self.n:self.n + self.history]]).to(dtype=torch.float32, device=self.device).div_(255)
+
     # Discrete action to be used as index
     action = torch.tensor([transition[self.history - 1].action], dtype=torch.int64, device=self.device)
     # Calculate truncated n-step discounted return R^n = Σ_k=0->n-1 (γ^k)R_t+k+1 (note that invalid nth next states have reward 0)
