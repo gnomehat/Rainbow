@@ -42,7 +42,7 @@ def test(args, T, dqn, val_mem, evaluate=False):
         env.render()
       if args.render_video:
         caption = "t={} reward={} action={}".format(t, reward_sum, action)
-        vid.write_frame(state[-1], resize_to=(512,512), caption=caption)
+        vid.write_frame(state, resize_to=(512,512), caption=caption)
 
       if done:
         T_rewards.append(reward_sum)
