@@ -16,8 +16,7 @@ Ts, rewards, Qs, best_avg_reward = [], [], [], -1e10
 # Test DQN
 def test(args, T, dqn, val_mem, evaluate=False):
   global Ts, rewards, Qs, best_avg_reward
-  print('starting test')
-  env = Env(args)
+  env = Env(args, render=evaluate)
   env.eval()
   Ts.append(T)
   T_rewards, T_Qs = [], []
@@ -42,7 +41,7 @@ def test(args, T, dqn, val_mem, evaluate=False):
         env.render()
       if args.render_video:
         caption = "t={} reward={} action={}".format(t, reward_sum, action)
-        vid.write_frame(state, resize_to=(512,512), caption=caption)
+        vid.write_frame(env.last_screenshot, resize_to=(512,512), caption=caption)
 
       if done:
         T_rewards.append(reward_sum)
