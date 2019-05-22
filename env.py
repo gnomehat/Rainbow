@@ -6,21 +6,25 @@ import torch
 import numpy as np
 
 
-from sc2env.environments.zone_intruders import ZoneIntrudersEnvironment
+from sc2env.environments.star_intruders import StarIntrudersEnvironment
 
 class Env():
     def __init__(self, args, render=False):
-        self.env = ZoneIntrudersEnvironment(render=render)
+        self.render = render
+        if render:
+            self.screen_size = 512
+        else:
+            self.screen_size = 64
+        self.env = StarIntrudersEnvironment(render=render, screen_size=self.screen_size)
         self.episode_length = 0
         self.total_episodes = 0
-        self.render = render
 
     def action_space(self):
         return self.env.action_space.n
 
     def reset(self):
         if self.total_episodes > 10:
-            self.env = ZoneIntrudersEnvironment(render=self.render)
+            self.env = StarIntrudersEnvironment(render=self.render, screen_size=self.screen_size)
             self.total_episodes = 0
         self.episode_length = 0
         state = self.env.reset()

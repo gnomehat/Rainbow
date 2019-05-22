@@ -21,6 +21,7 @@ class Agent():
     self.online_net = DQN(args, self.action_space).to(device=args.device)
     if args.model and os.path.isfile(args.model):
       # Always load tensors onto CPU by default, will shift to GPU if necessary
+      print('Loading model {}'.format(args.model))
       self.online_net.load_state_dict(torch.load(args.model, map_location='cpu'))
     self.online_net.train()
 
